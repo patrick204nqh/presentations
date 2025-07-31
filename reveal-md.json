@@ -10,6 +10,7 @@
   "transition": "slide",
   "transitionSpeed": "default",
   "separator": "^---$",
+  "verticalSeparator": "^--$",
   "separatorNotes": "^Note:",
   "width": 1024,
   "height": 768,
@@ -17,11 +18,17 @@
   "minScale": 0.2,
   "maxScale": 2.0,
   "markdown": {
-    "smartypants": true,
-    "breaks": false
+    "smartypants": true
   },
   "math": {
     "mathjax": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js",
     "config": "TeX-AMS_HTML-full"
-  }
+  },
+  "plugins": [
+    "RevealMarkdown",
+    "RevealHighlight",
+    "RevealNotes",
+    "RevealMath",
+    "RevealMermaid"
+  ]
 }

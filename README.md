@@ -59,9 +59,15 @@ presentations/
 
 ## Markdown Syntax
 
-- Use `---` to separate slides
+- Use `---` to separate horizontal slides (main topics)
+- Use `--` to create vertical slides (sub-topics)
 - Use `Note:` for speaker notes
 - Use fragment animations: `<!-- .element: class="fragment" -->`
+
+**Navigation:**
+- **Left/Right arrows:** Horizontal navigation
+- **Up/Down arrows:** Vertical navigation
+- **ESC:** Overview mode to see slide structure
 
 ## Themes
 
