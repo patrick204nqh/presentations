@@ -66,19 +66,23 @@ This is a **vertical slide** - you reached it by pressing **Down arrow**!
 
 ---
 
-## Text & Code
+## TextCode
 
-### Formatting
 **Bold**, *italic*, `code`, and lists:
 - Easy to write
 - Version controlled
 - Professional output
 
-### Code Blocks
-```javascript
-function greetPresentation() {
-    return "Hello, Slides!";
-}
+---
+
+
+## Code Blocks
+
+```js [712: 1-2|3|4]
+let a = 1;
+let b = 2;
+let c = x => 1 + 2 + x;
+c(3);
 ```
 
 Syntax highlighting for 100+ languages!
@@ -94,6 +98,8 @@ graph TD
     B --> C[Preview Slides]
     C --> D[Export to PDF]
 ```
+
+--
 
 ### Images & Media
 ```markdown
@@ -111,6 +117,8 @@ graph TD
 - Second point appears on click <!-- .element: class="fragment" -->
 - Third point fades up <!-- .element: class="fragment fade-up" -->
 - Final point highlighted <!-- .element: class="fragment highlight-red" -->
+
+--
 
 ### Grid Layouts
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -145,7 +153,9 @@ make test-theme NAME=demo THEME=night
 make test-theme NAME=demo THEME=league
 ```
 
-**Available:** white, black, solarized, league, night, beige, sky
+**Available:** `white`, `black`, `solarized`, `league`, `night`, `beige`, `sky`
+
+--
 
 ### Export Options
 ```bash
