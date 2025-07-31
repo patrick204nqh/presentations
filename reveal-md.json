@@ -1,0 +1,27 @@
+{
+  "theme": "white",
+  "highlightTheme": "github",
+  "controls": true,
+  "progress": true,
+  "center": false,
+  "touch": true,
+  "fragments": true,
+  "help": true,
+  "transition": "slide",
+  "transitionSpeed": "default",
+  "separator": "^---$",
+  "separatorNotes": "^Note:",
+  "width": 1024,
+  "height": 768,
+  "margin": 0.1,
+  "minScale": 0.2,
+  "maxScale": 2.0,
+  "markdown": {
+    "smartypants": true,
+    "breaks": false
+  },
+  "math": {
+    "mathjax": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js",
+    "config": "TeX-AMS_HTML-full"
+  }
+}

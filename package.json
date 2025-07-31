@@ -1,0 +1,23 @@
+{
+  "name": "presentations",
+  "version": "1.0.0",
+  "description": "Simple reveal.js presentation system",
+  "scripts": {
+    "serve": "reveal-md slides/ --watch --port 8000",
+    "build": "reveal-md slides/ --static build/",
+    "init": "node scripts/init.js",
+    "export": "node scripts/export.js"
+  },
+  "dependencies": {
+    "reveal-md": "^6.0.0",
+    "fs-extra": "^11.2.0",
+    "puppeteer": "^21.0.0"
+  },
+  "keywords": [
+    "reveal.js",
+    "markdown",
+    "presentations"
+  ],
+  "author": "",
+  "license": "MIT"
+}
