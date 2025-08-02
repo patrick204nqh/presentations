@@ -10,6 +10,7 @@ const { createServer } = require('http');
 const PORT = process.env.PORT || 8000;
 const SLIDES_DIR = path.join(__dirname, '../slides');
 const TEMPLATES_DIR = path.join(__dirname, '../templates');
+const PUBLIC_DIR = path.join(__dirname, '../public');
 const NODE_MODULES = path.join(__dirname, '../node_modules');
 
 class PresentationServer {
@@ -31,12 +32,15 @@ class PresentationServer {
     // Serve slides directory
     this.app.use('/slides', express.static(SLIDES_DIR));
     
+    // Serve public assets (images, etc.)
+    this.app.use('/public', express.static(PUBLIC_DIR));
+    
     // Serve custom CSS
     this.app.use('/templates', express.static(TEMPLATES_DIR));
 
     // Main presentation route
     this.app.get('/', (req, res) => this.servePresentationList(res));
-    this.app.get('/:presentation', (req, res) => this.servePresentation(req, res));
+    this.app.get('/*', (req, res) => this.servePresentation(req, res));
   }
 
   setupWebSocket() {
@@ -64,21 +68,30 @@ class PresentationServer {
 
   async servePresentationList(res) {
     try {
-      const files = await fs.readdir(SLIDES_DIR);
-      const presentations = files
-        .filter(file => file.endsWith('.md'))
-        .map(file => file.replace('.md', ''));
+      const presentations = await this.findAllPresentations(SLIDES_DIR);
 
       const html = `
         <!DOCTYPE html>
         <html>
-        <head><title>Presentations</title></head>
+        <head>
+          <title>Presentations</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            h1 { color: #333; }
+            ul { list-style: none; padding: 0; }
+            li { margin: 10px 0; }
+            a { text-decoration: none; color: #007acc; padding: 8px 12px; display: inline-block; border-radius: 4px; }
+            a:hover { background: #f0f8ff; }
+            .folder { color: #666; font-size: 0.9em; }
+          </style>
+        </head>
         <body>
-          <h1>Available Presentations</h1>
+          <h1>📊 Available Presentations</h1>
           <ul>
-            ${presentations.map(name => 
-              `<li><a href="/${name}">${name}</a></li>`
-            ).join('')}
+            ${presentations.map(({ name, path: relPath }) => {
+              const folder = path.dirname(relPath) !== '.' ? `<span class="folder">${path.dirname(relPath)}/</span>` : '';
+              return `<li>${folder}<a href="/${relPath.replace('.md', '')}">${name}</a></li>`;
+            }).join('')}
           </ul>
         </body>
         </html>
@@ -90,16 +103,38 @@ class PresentationServer {
     }
   }
 
+  async findAllPresentations(dir, basePath = '') {
+    const presentations = [];
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = path.join(basePath, entry.name);
+
+      if (entry.isDirectory()) {
+        const subPresentations = await this.findAllPresentations(fullPath, relativePath);
+        presentations.push(...subPresentations);
+      } else if (entry.name.endsWith('.md')) {
+        presentations.push({
+          name: entry.name.replace('.md', ''),
+          path: relativePath
+        });
+      }
+    }
+
+    return presentations;
+  }
+
   async servePresentation(req, res) {
-    const { presentation } = req.params;
-    const markdownPath = path.join(SLIDES_DIR, `${presentation}.md`);
+    const presentationPath = req.path.substring(1); // Remove leading /
+    const markdownPath = path.join(SLIDES_DIR, `${presentationPath}.md`);
 
     try {
       if (!await fs.pathExists(markdownPath)) {
-        return res.status(404).send('Presentation not found');
+        return res.status(404).send(`Presentation not found: ${presentationPath}`);
       }
 
-      const html = await this.generateHTML(presentation);
+      const html = await this.generateHTML(presentationPath);
       
       res.send(html);
     } catch (error) {
@@ -110,15 +145,17 @@ class PresentationServer {
 
   // No config needed - using hardcoded reveal.js defaults
 
-  async generateHTML(presentation) {
+  async generateHTML(presentationPath) {
     const templatePath = path.join(TEMPLATES_DIR, 'presentation.html');
     let template = await fs.readFile(templatePath, 'utf8');
 
+    const title = path.basename(presentationPath);
+    
     // Simple template replacement
     const replacements = {
-      '{{title}}': presentation,
+      '{{title}}': title,
       '{{revealPath}}': '/reveal',
-      '{{markdownFile}}': `/slides/${presentation}.md`,
+      '{{markdownFile}}': `/slides/${presentationPath}.md`,
       '{{#liveReload}}': '',
       '{{port}}': PORT,
       '{{/liveReload}}': ''

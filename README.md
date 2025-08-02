@@ -74,6 +74,9 @@ presentations/
 
 ## Markdown Syntax
 
+📖 **[Complete Syntax Guide](./examples/educational/reveal-syntax-guide.md)** - Learn all features with examples
+
+**Quick Reference:**
 - Use `---` to separate horizontal slides (main topics)
 - Use `--` to create vertical slides (sub-topics)
 - Use `Note:` for speaker notes
