@@ -1,6 +1,17 @@
 # Presentations
 
-Simple reveal.js presentation system using markdown with **native reveal.js** and built-in markdown support.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2016-brightgreen)](https://nodejs.org/)
+[![reveal.js](https://img.shields.io/badge/reveal.js-5.0-ff69b4)](https://revealjs.com/)
+
+A simple presentation system that creates beautiful slides from markdown files.
+
+<div align="center">
+  <img src="./public/images/markdown-presenter.jpeg" alt="Presentations Logo" width="200"/>
+
+  <h3>🚀 Professional Presentation System</h3>
+  <p><em>Transform your markdown into stunning presentations</em></p>
+</div>
 
 ## Quick Start
 
