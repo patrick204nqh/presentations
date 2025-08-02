@@ -40,13 +40,8 @@ class StaticBuilder {
   }
 
   async generateInlineHTML(presentation) {
-    console.log(`\n=== INLINE BUILD DEBUG for ${presentation} ===`);
-    
     const templatePath = path.join(TEMPLATES_DIR, 'presentation-inline.html');
     let template = await fs.readFile(templatePath, 'utf8');
-    
-    console.log(`1. Template loaded: ${template.length} chars`);
-    console.log(`   Reveal.initialize count: ${(template.match(/Reveal\.initialize/g) || []).length}`);
     
     const revealPath = path.join(NODE_MODULES, 'reveal.js');
     
@@ -62,35 +57,21 @@ class StaticBuilder {
       fs.readFile(path.join(revealPath, 'plugin/math/math.js'), 'utf8'),
       fs.readFile(path.join(SLIDES_DIR, `${presentation}.md`), 'utf8')
     ]);
-    
-    console.log(`2. Assets loaded:`);
-    console.log(`   mathJS length: ${mathJS.length} chars`);
-    console.log(`   mathJS contains Reveal.initialize: ${(mathJS.match(/Reveal\.initialize/g) || []).length}`);
 
     // Fix theme CSS font import issue
     const fixedThemeCSS = themeCSS.replace('@import url(./fonts/source-sans-pro/source-css.css);', '/* Font removed for inline build */');
 
-    // Clean JavaScript files to prevent template replacement conflicts
+    // Clean JavaScript files
     const cleanJS = (jsCode) => {
-      // For highlight.js, we need to be extra careful about }} patterns that might interfere
       let cleaned = jsCode.trim();
-      
-      // If this is the large highlight.js file, add extra protection
-      if (jsCode.length > 500000) {
-        console.log(`   Applying extra cleaning to large JS file (${jsCode.length} chars)`);
-        // The issue might be related to }} patterns in the minified JS
-        // Let's ensure the JS is properly terminated
-        if (!cleaned.endsWith(';')) {
-          cleaned += ';';
-        }
+      // Ensure proper termination for large JS files
+      if (jsCode.length > 500000 && !cleaned.endsWith(';')) {
+        cleaned += ';';
       }
-      
       return cleaned;
     };
 
-    console.log(`3. Starting template replacements...`);
-    
-    // Process each replacement individually with detailed debugging
+    // Replace template variables
     const replacements = {
       '{{title}}': presentation,
       '{{markdownContent}}': markdownContent,
@@ -104,51 +85,12 @@ class StaticBuilder {
       '{{highlightJS}}': cleanJS(highlightJS)
     };
     
+    // Apply replacements using split/join for safety
     Object.entries(replacements).forEach(([key, value]) => {
-      const beforeLength = template.length;
-      const beforeRevealCount = (template.match(/Reveal\.initialize/g) || []).length;
-      const beforeTemplateVars = Object.keys(replacements).filter(k => template.includes(k));
-      
-      // Check if the template variable exists before replacement
-      if (!template.includes(key)) {
-        console.log(`   ⚠️  ${key} not found in template - skipping`);
-        return;
-      }
-      
-      const occurences = (template.match(new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\\\$&'), 'g')) || []).length;
-      console.log(`   Processing ${key}: ${occurences} occurrence(s), value size: ${value.length} chars`);
-      
-      // Use replaceAll equivalent to replace ALL occurrences
-      template = template.split(key).join(value);
-      
-      const afterLength = template.length;
-      const afterRevealCount = (template.match(/Reveal\.initialize/g) || []).length;
-      const afterTemplateVars = Object.keys(replacements).filter(k => template.includes(k));
-      
-      const lengthDiff = afterLength - beforeLength;
-      const expectedDiff = (value.length - key.length) * occurences;
-      
-      console.log(`   ✓ ${key}: template ${beforeLength} -> ${afterLength} chars (${lengthDiff >= 0 ? '+' : ''}${lengthDiff})`);
-      console.log(`     Expected size change: ${expectedDiff}, Actual: ${lengthDiff}`);
-      
-      if (beforeRevealCount !== afterRevealCount) {
-        console.log(`     🚨 Reveal.initialize count changed: ${beforeRevealCount} -> ${afterRevealCount}`);
-      }
-      
-      if (beforeTemplateVars.length !== afterTemplateVars.length) {
-        console.log(`     Template vars before: [${beforeTemplateVars.join(', ')}]`);
-        console.log(`     Template vars after: [${afterTemplateVars.join(', ')}]`);
-      }
-      
-      if (lengthDiff !== expectedDiff) {
-        console.log(`     🚨 UNEXPECTED SIZE CHANGE! Expected ${expectedDiff}, got ${lengthDiff}`);
+      if (template.includes(key)) {
+        template = template.split(key).join(value);
       }
     });
-    
-    console.log(`4. Final result:`);
-    console.log(`   Template length: ${template.length} chars`);
-    console.log(`   Final Reveal.initialize count: ${(template.match(/Reveal\.initialize/g) || []).length}`);
-    console.log(`=== END DEBUG ===\n`);
 
     return template;
   }
