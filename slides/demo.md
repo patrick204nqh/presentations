@@ -173,7 +173,7 @@ make build              # Static HTML
 
 **Navigation table:**
 
-| Key | Action |
+| Key             | Action              |
 | --------------- | ------------------- |
 | **Space/Arrow** | Next slide/fragment |
 | **Up/Down**     | Vertical navigation |

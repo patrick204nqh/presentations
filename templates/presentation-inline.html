@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{{title}}</title>
+  
+  <style>
+    {{revealCSS}}
+  </style>
+  
+  <style>
+    {{themeCSS}}
+  </style>
+  
+  <style>
+    {{highlightCSS}}
+  </style>
+  
+  <style>
+    .reveal .slides section .fragment.highlight-red.visible {
+      color: #ff2c2d;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section data-markdown
+               data-separator="^---$"
+               data-separator-vertical="^--$"
+               data-separator-notes="^Note:"
+               data-charset="utf-8">
+        <textarea data-template>
+{{markdownContent}}
+        </textarea>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    {{revealJS}}
+  </script>
+  
+  <script>
+    {{markdownJS}}
+  </script>
+  
+  <script>
+    {{highlightJS}}
+  </script>
+  
+  <script>
+    {{notesJS}}
+  </script>
+  
+  <script>
+    {{mathJS}}
+  </script>
+
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      center: false,
+      touch: true,
+      fragments: true,
+      help: true,
+      transition: 'slide',
+      transitionSpeed: 'default',
+      width: 1024,
+      height: 768,
+      margin: 0.1,
+      minScale: 0.2,
+      maxScale: 2.0,
+      
+      markdown: {
+        smartypants: true
+      },
+      
+      math: {
+        mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+        config: 'TeX-AMS_HTML-full'
+      },
+      
+      plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ]
+    });
+  </script>
+</body>
+</html>

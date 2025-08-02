@@ -8,6 +8,7 @@ help:
 	@echo "  make serve                      - Start development server (all presentations)"
 	@echo "  make preview NAME=<name>        - Preview specific presentation"
 	@echo "  make build                      - Build all presentations to HTML"
+	@echo "  make build-inline               - Build single-file presentations (portable)"
 	@echo "  make export NAME=<name>         - Export presentation to PDF"
 	@echo "  make test-theme NAME=<name> THEME=<theme> - Test different themes"
 	@echo "  make clean                      - Clean build directory"
@@ -15,6 +16,7 @@ help:
 	@echo "Examples:"
 	@echo "  make new NAME=my-presentation"
 	@echo "  make preview NAME=demo"
+	@echo "  make build-inline               # Creates portable single-file presentations"
 	@echo "  make test-theme NAME=demo THEME=moon"
 	@echo "  make export NAME=demo"
 
@@ -36,13 +38,18 @@ new:
 # Start development server
 serve:
 	@echo "Starting development server on http://localhost:8000"
-	@echo "Using pure theme without custom CSS"
-	npx reveal-md slides/ --watch --port 8000
+	@echo "Visit http://localhost:8000 to see all presentations"
+	npm run serve
 
 # Build all presentations
 build:
 	@echo "Building all presentations..."
-	npx reveal-md slides/ --static build/
+	npm run build
+
+# Build single-file presentations (portable)
+build-inline:
+	@echo "Building single-file presentations..."
+	npm run build:inline
 
 # Export presentation to PDF
 export:
@@ -51,7 +58,7 @@ export:
 		exit 1; \
 	fi
 	@echo "Exporting $(NAME) to PDF..."
-	npx reveal-md slides/$(NAME).md --print build/$(NAME).pdf --print-size 1024x768
+	node scripts/export.js $(NAME)
 
 # Preview specific presentation
 preview:
@@ -60,17 +67,20 @@ preview:
 		exit 1; \
 	fi
 	@echo "Previewing $(NAME) on http://localhost:8000"
-	npx reveal-md slides/$(NAME).md --watch --port 8000
+	@echo "Visit http://localhost:8000/$(NAME) after starting the server"
+	npm run serve
 
 # Test different themes
 test-theme:
 	@if [ -z "$(NAME)" ] || [ -z "$(THEME)" ]; then \
 		echo "Usage: make test-theme NAME=presentation-name THEME=theme-name"; \
 		echo "Available themes: black, white, league, beige, sky, night, serif, simple, solarized, blood, moon"; \
+		echo "Note: Edit templates/presentation.html to change the theme, then restart the server"; \
 		exit 1; \
 	fi
-	@echo "Testing $(NAME) with $(THEME) theme..."
-	npx reveal-md slides/$(NAME).md --theme $(THEME) --watch --port 8000
+	@echo "To test $(NAME) with $(THEME) theme:"
+	@echo "1. Edit templates/presentation.html and change the theme CSS link"
+	@echo "2. Run 'make serve' and visit http://localhost:8000/$(NAME)"
 
 # Clean build directory
 clean:
